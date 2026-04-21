@@ -1,0 +1,2 @@
+SubscriptionName,ResourceGroupName,ZoneName,RecordName,Target,Resolved,ResolvedIPs
+sub-example,rg-example,example.com,app.example.com,target.example.net,False,

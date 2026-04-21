@@ -1,0 +1,2 @@
+CNAME,Target,ResourceGroupName,SubscriptionName,RecordSetName,ZoneName,Reason
+app.example.com,orphan.example.net,rg-example,sub-example,app,example.com,No public A/AAAA resolution observed
