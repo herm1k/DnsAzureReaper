@@ -94,6 +94,56 @@ For public takeover research and fingerprints, see:
 
 That reference should be used as supporting context, not as definitive proof for any individual hostname. The project itself warns that entries are community-maintained and that exploitability still needs to be validated case by case. :contentReference[oaicite:6]{index=6}
 
+## Usage
+
+DNSReaper can work in two modes:
+
+- scan hostnames from a flat file
+- pull candidate records from Cloudflare and inspect them automatically
+
+### Run against a domains file
+
+Use this when you already have a list of hostnames to review.
+
+```bash
+python dnsreaper.py --domains-file sample_domains.txt --output results.csv
+```
+
+### Run against Cloudflare
+
+Use this when you want to enumerate candidate records directly from your Cloudflare configuration.
+
+```bash
+python dnsreaper.py --config config.json --from-cloudflare --output results.csv
+```
+
+### Common options
+
+```bash
+python dnsreaper.py --help
+```
+
+Typical options include:
+
+- `--domains-file` — input file with hostnames to inspect
+- `--config` — configuration file with API credentials
+- `--from-cloudflare` — collect records from Cloudflare instead of a local file
+- `--output` — write findings to a CSV file
+- `--threads` — number of worker threads
+- `--public-resolvers` — comma-separated DNS resolvers for validation
+
+### Output
+
+DNSReaper produces a CSV report containing review candidates, including the original hostname, the terminal target, and the reason it was flagged.
+
+### Expected workflow
+
+1. collect candidate hostnames
+2. run DNSReaper
+3. review unresolved or suspicious results
+4. validate whether the target is only stale or actually takeover-relevant
+5. remove or remediate unneeded records
+
 ## Important note
 
 AzureReaper helps answer:
