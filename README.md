@@ -93,56 +93,63 @@ For public takeover research and fingerprints, see:
 - **EdOverflow / can-i-take-over-xyz** — a widely used community reference covering services, claimability status, and example fingerprints for dangling DNS / takeover research. :contentReference[oaicite:5]{index=5}
 
 That reference should be used as supporting context, not as definitive proof for any individual hostname. The project itself warns that entries are community-maintained and that exploitability still needs to be validated case by case. :contentReference[oaicite:6]{index=6}
-
 ## Usage
 
-DNSReaper can work in two modes:
+AzureReaper is intended to help review Azure-linked DNS records and detect entries that may no longer point to owned or active cloud resources.
 
-- scan hostnames from a flat file
-- pull candidate records from Cloudflare and inspect them automatically
+### Run the scan
 
-### Run against a domains file
-
-Use this when you already have a list of hostnames to review.
-
-```bash
-python dnsreaper.py --domains-file sample_domains.txt --output results.csv
+```powershell
+pwsh ./scan_azure_dns.ps1 -InputCsv .\sample_targets.csv -OutputCsv .\results.csv
 ```
 
-### Run against Cloudflare
+### Example with verbose output
 
-Use this when you want to enumerate candidate records directly from your Cloudflare configuration.
-
-```bash
-python dnsreaper.py --config config.json --from-cloudflare --output results.csv
+```powershell
+pwsh ./scan_azure_dns.ps1 -InputCsv .\sample_targets.csv -OutputCsv .\results.csv -Verbose
 ```
 
-### Common options
+### Cleanup / follow-up mode
 
-```bash
-python dnsreaper.py --help
+If your project includes a cleanup helper, use it carefully and prefer dry-run first.
+
+```powershell
+pwsh ./delete_records.ps1 -InputCsv .\results.csv -WhatIf
 ```
 
-Typical options include:
+### Common parameters
 
-- `--domains-file` — input file with hostnames to inspect
-- `--config` — configuration file with API credentials
-- `--from-cloudflare` — collect records from Cloudflare instead of a local file
-- `--output` — write findings to a CSV file
-- `--threads` — number of worker threads
-- `--public-resolvers` — comma-separated DNS resolvers for validation
+Typical parameters include:
+
+- `-InputCsv` — CSV file containing hostnames or Azure-linked targets to inspect
+- `-OutputCsv` — destination file for findings
+- `-Verbose` — print additional scan details
+- `-WhatIf` — simulate cleanup actions without making changes
+
+### Expected input
+
+AzureReaper usually works from a CSV list of candidate hostnames, endpoints, or DNS records associated with Azure-hosted services.
+
+Example:
+
+```csv
+hostname
+app.example.com
+old-api.example.com
+staging-portal.example.com
+```
 
 ### Output
 
-DNSReaper produces a CSV report containing review candidates, including the original hostname, the terminal target, and the reason it was flagged.
+AzureReaper writes a CSV report with entries that appear stale, unresolved, unowned, or otherwise suspicious enough for manual review.
 
 ### Expected workflow
 
-1. collect candidate hostnames
-2. run DNSReaper
-3. review unresolved or suspicious results
-4. validate whether the target is only stale or actually takeover-relevant
-5. remove or remediate unneeded records
+1. export or prepare a list of Azure-linked hostnames
+2. run AzureReaper against the list
+3. review flagged records
+4. validate whether the backing Azure resource still exists and is owned
+5. clean up or remediate stale mappings
 
 ## Important note
 
